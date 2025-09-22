@@ -3,7 +3,7 @@
 import { entryApi } from "https://esm.sh/gh/dalkak2/enz-pixi@0.2.6/util/entryApi.ts"
 
 const selectProjects =
-async () => {
+async (display: number, sort: string) => {
     const res = await entryApi({
         query: `
             query SELECT_PROJECTS(
@@ -23,7 +23,7 @@ async () => {
             }
         `,
         variables: {
-            pageParam: { display: 10, sort: "likeCnt" },
+            pageParam: { display, sort },
         },
     }).then(x => x.json())
 
@@ -31,7 +31,8 @@ async () => {
 }
 
 const result = [
-    ...await selectProjects(),
+    ...await selectProjects(12, "likeCnt"),
+    ...await selectProjects(12, "ranked"),
 ]
     .map(x => x.id)
     .join("\n")
