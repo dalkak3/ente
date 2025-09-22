@@ -2,27 +2,38 @@
 
 import { entryApi } from "https://esm.sh/gh/dalkak2/enz-pixi@0.2.6/util/entryApi.ts"
 
-const res = await entryApi({
-    query: `
-        query SELECT_PROJECTS(
-            $query: String
-        ) {
-            projectList(
-                query: $query
-                pageParam: { display: 10, sort: "likeCnt" }
-                staffPicked: true
+const selectProjects =
+async () => {
+    const res = await entryApi({
+        query: `
+            query SELECT_PROJECTS(
+                $query: String
+                $pageParam: PageParam
             ) {
-                total
-                list {
-                    id
+                projectList(
+                    query: $query
+                    pageParam: $pageParam
+                    staffPicked: true
+                ) {
+                    total
+                    list {
+                        id
+                    }
                 }
             }
-        }
-    `,
-}).then(x => x.json())
+        `,
+        variables: {
+            pageParam: { display: 10, sort: "likeCnt" },
+        },
+    }).then(x => x.json())
 
-const result = res.data.projectList.list
-    .map((x: any) => x.id)
+    return res.data.projectList.list as { id: string }[]
+}
+
+const result = [
+    ...await selectProjects(),
+]
+    .map(x => x.id)
     .join("\n")
 
 await Deno.writeTextFile("case/selected.txt", result+"\n")
