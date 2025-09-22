@@ -8,7 +8,7 @@ const gets = (await Deno.readTextFile("case/selected.txt"))
         const data = await project(id)
         await Deno.writeTextFile(
             `case/json/${id}.json`,
-            JSON.stringify(data),
+            JSON.stringify(data, undefined, 1),
         )
     })
 
